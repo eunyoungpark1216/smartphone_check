@@ -16,7 +16,6 @@
       background-position: top left, top 20px right 20px;
       background-repeat: repeat, no-repeat;
     }
-
     .container {
       max-width: 700px;
       margin: 80px auto;
@@ -26,24 +25,20 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.15);
       text-align: center;
     }
-
     .question-img {
       width: 80px;
       margin-bottom: 10px;
     }
-
     .question-count {
       color: #00796b;
       font-size: 1.4em;
       margin-bottom: 15px;
     }
-
     .question-text {
       font-size: 1.8em;
       color: #333;
       margin-bottom: 30px;
     }
-
     .options label {
       display: block;
       margin: 12px auto;
@@ -56,16 +51,13 @@
       cursor: pointer;
       transition: all 0.3s ease;
     }
-
     .options input {
       margin-right: 10px;
       transform: scale(1.2);
     }
-
     .options label:hover {
       background-color: #ffe0b2;
     }
-
     button {
       margin-top: 25px;
       padding: 15px 35px;
@@ -76,11 +68,9 @@
       border-radius: 12px;
       cursor: pointer;
     }
-
     button:hover {
       background-color: #00897b;
     }
-
     .result {
       font-size: 1.6em;
       color: #4e342e;
@@ -90,7 +80,14 @@
 </head>
 <body>
 
-  <div class="container" id="quizBox">
+  <div class="container" id="nameBox">
+    <h2>이름을 입력하세요</h2>
+    <input type="text" id="nameInput" placeholder="예: 3-2 김슬기" style="font-size:1.2em; padding:10px; width:70%;">
+    <br><br>
+    <button onclick="startQuiz()">검사 시작</button>
+  </div>
+
+  <div class="container" id="quizBox" style="display:none;">
     <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="스마트폰 아이콘" class="question-img">
     <div class="question-count" id="questionCount">1 / 10</div>
     <div class="question-text" id="questionText">문항을 불러오는 중...</div>
@@ -116,6 +113,7 @@
 
     let currentIndex = 0;
     const scores = [];
+    let studentName = "";
 
     const choices = [
       { text: "전혀 그렇지 않다", value: 1 },
@@ -124,11 +122,23 @@
       { text: "매우 그렇다", value: 4 }
     ];
 
+    function startQuiz() {
+      const nameInput = document.getElementById('nameInput').value.trim();
+      if (!nameInput) {
+        alert("이름을 입력해주세요!");
+        return;
+      }
+      studentName = nameInput;
+      document.getElementById('nameBox').style.display = 'none';
+      document.getElementById('quizBox').style.display = 'block';
+      loadQuestion();
+    }
+
     function loadQuestion() {
       document.getElementById('questionText').innerText = questions[currentIndex];
-      document.getElementById('questionCount').innerText = `${currentIndex + 1} / ${questions.length}`;
+      document.getElementById('questionCount').innerText = \`\${currentIndex + 1} / \${questions.length}\`;
       const optionsHTML = choices.map(choice =>
-        `<label><input type="radio" name="choice" value="${choice.value}" required> ${choice.text}</label>`
+        \`<label><input type="radio" name="choice" value="\${choice.value}" required> \${choice.text}</label>\`
       ).join('');
       document.getElementById('optionsBox').innerHTML = optionsHTML;
     }
@@ -163,19 +173,14 @@
 
       document.getElementById("quizBox").style.display = "none";
       document.getElementById("resultBox").style.display = "block";
-      document.getElementById("resultBox").innerHTML = `<strong>${studentName}님의 총점: ${total}점</strong><br>${group}`;
- 
+      document.getElementById("resultBox").innerHTML = \`<strong>\${studentName}님의 총점: \${total}점</strong><br>\${group}\`;
+
       fetch("https://script.google.com/macros/s/AKfycbz2Pg83eOH6oI-KmoaarKO01ggH7SjmfrvPLS-gDv8IV1WILqcor8CX25FH52Nydl8/exec", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({ name: studentName, score: total })
-      }).then(res=>console.log("저장됨"))
-        .catch(err=>console.error(err));
+      }).then(res=>console.log("저장됨")).catch(err=>console.error(err));
     }
-
-    loadQuestion();
   </script>
-
-
 </body>
 </html>
